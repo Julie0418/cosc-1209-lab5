@@ -19,7 +19,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: monitor
-          args: --debug  # Run snyk monitor in the correct directory
+          
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -61,4 +61,3 @@ jobs:
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          
