@@ -17,12 +17,13 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: monitor
+          args: --debug
 
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]  # Removed unsupported versions (10.x, 15.x)
+        node-version: [12.x, 14.x, 16.x]  # Updated Node.js versions
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -30,9 +31,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
-        run: npm install  # Switch from npm ci if needed
+        run: |
+          cd ci-synk  # Change directory to where package.json is located
+          npm install
       - name: Build and test
         run: |
+          cd ci-synk  # Change directory again
           npm run build --if-present
           npm test
 
@@ -44,11 +48,15 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16.x'  # Changed to Node.js 16.x for publishing
+          node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
       - name: Install dependencies
-        run: npm install  # Switch from npm ci if needed
+        run: |
+          cd ci-synk  # Change directory to the correct path
+          npm install
       - name: Publish to npm
-        run: npm publish
+        run: |
+          cd ci-synk  # Change directory again
+          npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
