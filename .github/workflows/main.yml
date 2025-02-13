@@ -19,8 +19,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: monitor
-        working-directory: ./ci-synk  # Explicitly specify the working directory for Snyk
-
+          
   build:
     runs-on: ubuntu-latest
     strategy:
