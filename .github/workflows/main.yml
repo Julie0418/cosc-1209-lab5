@@ -20,7 +20,6 @@ jobs:
         with:
           command: monitor
           args: --debug  # Run snyk monitor in the correct directory
-
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -32,12 +31,13 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Change directory to ci-synk
-        run: cd ci-synk  # Navigate to the directory where package.json is located
       - name: Install dependencies
-        run: npm install  # Install npm dependencies
+        run: |
+          cd ci-synk  # Change directory to where package.json is located
+          npm install
       - name: Build and test
         run: |
+          cd ci-synk  # Change directory again
           npm run build --if-present
           npm test
 
@@ -46,16 +46,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js 16.x for publishing
+      - name: Use Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
-      - name: Change directory to ci-synk
-        run: cd ci-synk  # Navigate to the correct directory
       - name: Install dependencies
-        run: npm install  # Install npm dependencies
+        run: |
+          cd ci-synk  # Change directory to the correct path
+          npm install
       - name: Publish to npm
-        run: npm publish  # Publish the package
+        run: |
+          cd ci-synk  # Change directory again
+          npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          
