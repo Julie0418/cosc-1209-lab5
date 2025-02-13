@@ -10,14 +10,16 @@ jobs:
   security:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2  # Updated checkout action
+      - uses: actions/checkout@v2  # Checkout the repository
+      - name: Change directory to ci-synk
+        run: cd ci-synk  # Navigate to the directory where package.json is located
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: monitor
-          args: --debug
+          args: --debug  # Run snyk monitor in the correct directory
 
   build:
     runs-on: ubuntu-latest
@@ -30,13 +32,12 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Change directory to ci-synk
+        run: cd ci-synk  # Navigate to the directory where package.json is located
       - name: Install dependencies
-        run: |
-          cd ci-synk  # Change directory to where package.json is located
-          npm install
+        run: npm install  # Install npm dependencies
       - name: Build and test
         run: |
-          cd ci-synk  # Change directory again
           npm run build --if-present
           npm test
 
@@ -45,18 +46,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js
+      - name: Use Node.js 16.x for publishing
         uses: actions/setup-node@v2
         with:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
+      - name: Change directory to ci-synk
+        run: cd ci-synk  # Navigate to the correct directory
       - name: Install dependencies
-        run: |
-          cd ci-synk  # Change directory to the correct path
-          npm install
+        run: npm install  # Install npm dependencies
       - name: Publish to npm
-        run: |
-          cd ci-synk  # Change directory again
-          npm publish
+        run: npm publish  # Publish the package
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
